@@ -18,11 +18,11 @@ export class UserService {
 
   public signUpUser(requestDatas: SignUpUserRequest): Observable<SignUpUserResponse> {
     return this.http.post<SignUpUserResponse>
-    (`${this.API_URL}/user`, requestDatas);
+    (`${this.API_URL}/user/`, requestDatas);
   }
 
   public authUser(requestDatas: AuthRequest): Observable<AuthResponse> {
     return this.http.post<AuthResponse>
-    (`${this.API_URL}/auth`, requestDatas);
+    (`${this.API_URL}/auth/`, requestDatas);
   }
 }
