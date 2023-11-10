@@ -15,11 +15,11 @@ export class AuthGuard {
   ) { }
 
   public canActivate():
-    Observable<boolean | UrlTree>
+  | Observable<boolean | UrlTree>
   | Promise<boolean | UrlTree>
   | boolean
   | UrlTree {
-    if (this.userService.isLoggedIn()) {
+    if (!this.userService.isLoggedIn()) {
       this.router.navigate(['/home']);
       return false;
     }
