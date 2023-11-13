@@ -1,29 +1,31 @@
-import { Component } from '@angular/core';
-import { FormBuilder, Validators } from '@angular/forms';
+import { Component, OnDestroy } from '@angular/core';
+import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { SignUpUserRequest } from 'src/app/models/interfaces/user/SignUpUserRequest';
 import { AuthRequest } from 'src/app/models/interfaces/user/auth/AuthRequest';
 import { UserService } from 'src/app/services/user/user.service';
 import { CookieService } from 'ngx-cookie-service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent {
+export class HomeComponent implements OnDestroy{
+  private destroy$ = new Subject<void>();
   public loginCard = true;
 
   public loginForm = this.formBuilder.group({
-    'email':    ['',  Validators.required],
-    'password': ['',  Validators.required]
+    email:       new FormControl({value: '', disabled: false}, [Validators.required]),
+    password:    new FormControl({value: '', disabled: false}, [Validators.required])
   });
 
   public signUpForm = this.formBuilder.group({
-    'name':     ['',  Validators.required],
-    'email':    ['',  Validators.required],
-    'password': ['',  Validators.required]
+    name:        new FormControl({value: '', disabled: false}, [Validators.required]),
+    email:       new FormControl({value: '', disabled: false}, [Validators.required]),
+    password:    new FormControl({value: '', disabled: false}, [Validators.required]),
   });
 
   constructor(
@@ -35,8 +37,11 @@ export class HomeComponent {
   ) { }
 
   public onSubmitLoginForm(): void {
-    if (this.loginForm.value && this.loginForm.valid) {
+    if (this.loginForm.valid) {
       this.userService.authUser(this.loginForm.value as AuthRequest)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
         .subscribe({
           next: (response) => {
             if (response) {
@@ -68,6 +73,9 @@ export class HomeComponent {
   public onSubmitSignUpForm(): void {
     if (this.signUpForm.value && this.signUpForm.valid) {
       this.userService.signUpUser(this.signUpForm.value as SignUpUserRequest)
+      .pipe(
+        takeUntil(this.destroy$)
+      )
         .subscribe({
           next: (response) => {
             if (response) {
@@ -92,6 +100,11 @@ export class HomeComponent {
           }
         });
     }
-
   }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
 }
