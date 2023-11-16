@@ -2,6 +2,7 @@ import { Component, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { Subject, takeUntil } from 'rxjs';
+import { EventAction } from 'src/app/models/interfaces/products/event/EventAction';
 import { GetAllProductsResponse } from 'src/app/models/interfaces/products/response/GetAllProductsResponse';
 import { ProductsService } from 'src/app/services/products/products.service';
 import { ProductsDataTransferService } from 'src/app/shared/services/products-data-transfer.service';
@@ -38,24 +39,30 @@ export class ProductsHomeComponent implements OnInit, OnDestroy {
 
   public getAPIProductsDatas() {
     this.productsService.getAllProducts()
-    .pipe(takeUntil(this.destroy$))
-    .subscribe( {
-      next: (response) => {
-        if (response.length > 0) {
-          this.productsDatas = response;
-        }
-      },
-      error: (error) => {
-        console.log(error);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Erro ao carregar produtos',
-          life: 2500
-        });
-        this.router.navigate(['/dashboard']);
-      },
-    });
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (response) => {
+          if (response.length > 0) {
+            this.productsDatas = response;
+          }
+        },
+        error: (error) => {
+          console.log(error);
+          this.messageService.add({
+            severity: 'error',
+            summary: 'Error',
+            detail: 'Erro ao carregar produtos',
+            life: 2500
+          });
+          this.router.navigate(['/dashboard']);
+        },
+      });
+  }
+
+  public handleProductAction(event: EventAction): void {
+    if (event) {
+      console.log('DADOS DO EVENTO RECEBIDO', event);
+    }
   }
 
   ngOnDestroy(): void {
