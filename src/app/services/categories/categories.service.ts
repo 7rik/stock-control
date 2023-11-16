@@ -23,7 +23,7 @@ export class CategoriesService {
     private cookies: CookieService,
   ) { }
 
-  public getAllCategories(): Observable<GetCategoriesResponse> {
-    return this.http.get<GetCategoriesResponse>(`${this.API_URL}/categories`, this.httpOpitions);
+  public getAllCategories(): Observable<Array<GetCategoriesResponse>> {
+    return this.http.get<Array<GetCategoriesResponse>>(`${this.API_URL}/categories`, this.httpOpitions);
   }
 }
